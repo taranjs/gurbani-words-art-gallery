@@ -24,7 +24,6 @@
   var template = document.getElementById("artCardTemplate");
   var prevBtn = document.getElementById("prevBtn");
   var nextBtn = document.getElementById("nextBtn");
-  var centerBtn = document.getElementById("centerBtn");
   var floor = document.querySelector(".floor");
   var soundBtn = document.getElementById("soundBtn");
   var soundPresetSelect = document.getElementById("soundPreset");
@@ -455,10 +454,6 @@
 
     nextBtn.addEventListener("click", function () {
       navigate(1);
-    });
-
-    centerBtn.addEventListener("click", function () {
-      centerOn(currentIndex, true);
     });
 
     window.addEventListener("keydown", function (event) {
