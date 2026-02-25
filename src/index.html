@@ -15,9 +15,9 @@
   <body class="theme-navy">
     <main class="gallery-app">
       <header class="gallery-header">
-        <p class="eyebrow">ੴ Ik Oankar</p>
-        <h1>Gurbani Words Spiritual Art Gallery</h1>
-        <p class="subtitle">Walk slowly, reflect deeply, and discover each word as living light.</p>
+        <p class="eyebrow">ੴ</p>
+        <h1>Gurbani Word Meanings Gallery</h1>
+        <h2>Fall in Love with Gurbani, One Word at a time!</h2>
       </header>
 
       <section class="experience" aria-label="Virtual art gallery">
@@ -25,20 +25,24 @@
         <div class="light-beams"></div>
 
         <div class="utility-controls" aria-label="Experience controls">
-          <button id="soundBtn" class="utility-btn" aria-pressed="false" aria-label="Toggle ambient sound">Sound: Off</button>
-          <label class="utility-select-wrap" for="soundPreset">Tone</label>
-          <select id="soundPreset" class="utility-select" aria-label="Choose ambient sound profile">
-            <option value="mool">Mool Drone</option>
-            <option value="tanpura">Tanpura Glow</option>
-            <option value="river">River Shabad</option>
-          </select>
-          <label class="utility-select-wrap" for="themePreset">Theme</label>
-          <select id="themePreset" class="utility-select" aria-label="Choose gallery theme">
-            <option value="navy">Satin Navy</option>
-            <option value="ochre">Ochre</option>
-            <option value="crimson">Crimson Darbar</option>
-          </select>
-          <button id="fullscreenBtn" class="utility-btn" aria-pressed="false" aria-label="Toggle fullscreen">Fullscreen</button>
+          <button id="fullscreenBtn" class="utility-btn utility-btn--icon" aria-pressed="false" aria-label="Enter fullscreen" title="Toggle fullscreen">⛶</button>
+          <button id="settingsBtn" class="utility-btn utility-btn--icon" aria-expanded="false" aria-haspopup="true" aria-controls="settingsPanel" aria-label="Open settings" title="Settings">⚙</button>
+
+          <div id="settingsPanel" class="settings-panel" role="group" aria-label="Gallery settings" hidden>
+            <button id="soundBtn" class="utility-btn utility-btn--menu" aria-pressed="false" aria-label="Toggle ambient sound">Sound: Off</button>
+            <label class="utility-select-wrap" for="soundPreset">Tone</label>
+            <select id="soundPreset" class="utility-select" aria-label="Choose ambient sound profile">
+              <option value="mool">Mool Drone</option>
+              <option value="tanpura">Tanpura Glow</option>
+              <option value="river">River Shabad</option>
+            </select>
+            <label class="utility-select-wrap" for="themePreset">Theme</label>
+            <select id="themePreset" class="utility-select" aria-label="Choose gallery theme">
+              <option value="navy">Satin Navy</option>
+              <option value="ochre">Ochre</option>
+              <option value="crimson">Crimson Darbar</option>
+            </select>
+          </div>
         </div>
 
         <div class="gallery-wall" id="galleryWall" role="list" aria-label="Gurbani word artwork gallery"></div>
@@ -50,7 +54,7 @@
           <button id="centerBtn" class="nav-btn nav-btn--soft" aria-label="Center current artwork">Center</button>
           <button id="nextBtn" class="nav-btn" aria-label="Move right">Right →</button>
         </div>
-
+        <p class="guide-text">Walk slowly, reflect deeply, and discover each word as living light.</p>
         <p class="help-text">Use buttons, arrow keys, mouse wheel, or drag to walk. Press M for sound and F for fullscreen. Chimes play while sound is on.</p>
       </section>
     </main>
