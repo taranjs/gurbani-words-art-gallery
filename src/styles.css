@@ -154,6 +154,52 @@ h2 {
   border-top: 1px solid rgba(255, 240, 210, 0.16);
 }
 
+.experience::before,
+.experience::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 420ms ease;
+  z-index: 4;
+}
+
+.experience::before {
+  top: -3rem;
+  left: -3rem;
+  width: 18rem;
+  height: 18rem;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(245, 223, 173, 0.38) 0 12%, rgba(245, 223, 173, 0) 13% 100%),
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(245, 223, 173, 0.45) 0deg 9deg,
+      rgba(245, 223, 173, 0) 9deg 18deg
+    );
+  border-radius: 50%;
+  filter: blur(0.3px);
+}
+
+.experience::after {
+  right: -2.6rem;
+  bottom: 14%;
+  width: 14rem;
+  height: 14rem;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(216, 178, 108, 0.36) 0 10%, rgba(216, 178, 108, 0) 11% 100%),
+    repeating-conic-gradient(
+      from 18deg,
+      rgba(245, 223, 173, 0.36) 0deg 10deg,
+      rgba(245, 223, 173, 0) 10deg 20deg
+    );
+  border-radius: 50%;
+}
+
+.experience.mode-immersive::before,
+.experience.mode-immersive::after {
+  opacity: 0.42;
+}
+
 .aura,
 .light-beams {
   position: absolute;
@@ -331,6 +377,33 @@ h2 {
   will-change: transform;
 }
 
+.experience.mode-wall .gallery-wall {
+  top: 6%;
+  left: min(2vw, 1rem);
+  right: min(2vw, 1rem);
+  height: 70%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 1.2rem;
+  align-content: start;
+  justify-items: center;
+  padding: 0.8rem 1.2rem 1.6rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  transform: translateX(0) !important;
+  will-change: auto;
+}
+
+.experience.mode-wall .gallery-wall::-webkit-scrollbar {
+  width: 0.55rem;
+}
+
+.experience.mode-wall .gallery-wall::-webkit-scrollbar-thumb {
+  background: rgba(245, 223, 173, 0.42);
+  border-radius: 999px;
+}
+
 .art-card {
   width: clamp(220px, 20vw, 300px);
   flex: 0 0 auto;
@@ -343,12 +416,47 @@ h2 {
   filter: saturate(0.7);
 }
 
+.experience.mode-immersive .art-card {
+  opacity: 0.18;
+  transform: scale(0.72);
+  filter: grayscale(0.3) blur(1.6px) saturate(0.35);
+}
+
+.experience.mode-immersive .art-card .reflection {
+  opacity: 0;
+}
+
 .art-card.active {
   opacity: 1;
   transform: scale(2.06) translateY(-0.2rem);
   -webkit-filter: saturate(1) drop-shadow(0 24px 25px rgba(0, 0, 0, 0.26));
   filter: saturate(1) drop-shadow(0 24px 25px rgba(0, 0, 0, 0.26));
   z-index: 9;
+}
+
+.experience.mode-immersive .art-card.active {
+  opacity: 1;
+  transform: scale(2.44) translateY(-0.6rem);
+  -webkit-filter: saturate(1.12) drop-shadow(0 34px 48px rgba(0, 0, 0, 0.42));
+  filter: saturate(1.12) drop-shadow(0 34px 48px rgba(0, 0, 0, 0.42));
+}
+
+.experience.mode-immersive .art-card.active .reflection {
+  opacity: 1;
+}
+
+.experience.mode-wall .art-card {
+  width: min(100%, 170px);
+  opacity: 0.72;
+  transform: scale(1);
+  filter: saturate(0.8);
+}
+
+.experience.mode-wall .art-card.active {
+  opacity: 1;
+  transform: scale(1.08);
+  -webkit-filter: saturate(1.05) drop-shadow(0 14px 18px rgba(0, 0, 0, 0.3));
+  filter: saturate(1.05) drop-shadow(0 14px 18px rgba(0, 0, 0, 0.3));
 }
 
 .frame {
@@ -403,6 +511,14 @@ h2 {
   z-index: 3;
 }
 
+.experience.mode-immersive .floor {
+  opacity: 0.16;
+}
+
+.experience.mode-wall .floor {
+  opacity: 0.28;
+}
+
 .bottom-hud {
   position: absolute;
   z-index: 7;
@@ -414,6 +530,14 @@ h2 {
   justify-items: center;
   gap: 0.56rem;
   padding: 0 0.45rem;
+}
+
+.experience.mode-immersive .bottom-hud {
+  opacity: 0.55;
+}
+
+.experience.mode-wall .bottom-hud {
+  opacity: 0.82;
 }
 
 .nav-controls {
@@ -507,6 +631,10 @@ h2 {
     transform: scale(1.72) translateY(-0.16rem);
   }
 
+  .experience.mode-immersive .art-card.active {
+    transform: scale(2.02) translateY(-0.45rem);
+  }
+
   .utility-btn,
   .utility-select {
     font-size: 0.88rem;
@@ -574,6 +702,22 @@ h2 {
     transform: scale(1.46) translateY(-0.1rem);
   }
 
+  .experience.mode-immersive .art-card.active {
+    transform: scale(1.72) translateY(-0.32rem);
+  }
+
+  .experience.mode-wall .gallery-wall {
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: 0.8rem;
+    height: 68%;
+    top: 7%;
+    padding: 0.6rem 0.7rem 1rem;
+  }
+
+  .experience.mode-wall .art-card {
+    width: min(100%, 144px);
+  }
+
   .help-text {
     font-size: 0.72rem;
     padding: 0 1rem;
@@ -609,6 +753,11 @@ h2 {
   .gallery-wall {
     height: 62%;
     top: 3%;
+  }
+
+  .experience.mode-wall .gallery-wall {
+    height: 66%;
+    top: 6%;
   }
 
   .bottom-hud {

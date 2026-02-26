@@ -21,6 +21,7 @@
   ];
 
   var galleryWall = document.getElementById("galleryWall");
+  var experience = document.querySelector(".experience");
   var template = document.getElementById("artCardTemplate");
   var prevBtn = document.getElementById("prevBtn");
   var nextBtn = document.getElementById("nextBtn");
@@ -51,6 +52,12 @@
   var themePreset = "navy";
   var initialIndex = 0;
   var settingsOpen = false;
+  var viewModes = {
+    walk: "walk",
+    immersive: "immersive",
+    wall: "wall"
+  };
+  var currentViewMode = viewModes.walk;
 
   var soundPresets = {
     mool: {
@@ -209,6 +216,51 @@
     return { cards: cards, viewportCenter: viewportCenter };
   }
 
+  function setActiveCard(cards, activeIndex) {
+    var cardIndex;
+    for (cardIndex = 0; cardIndex < cards.length; cardIndex += 1) {
+      if (cardIndex === activeIndex) {
+        cards[cardIndex].classList.add("active");
+      } else {
+        cards[cardIndex].classList.remove("active");
+      }
+    }
+  }
+
+  function getCardIndex(cardEl) {
+    var cards = galleryWall.children;
+    var idx;
+
+    for (idx = 0; idx < cards.length; idx += 1) {
+      if (cards[idx] === cardEl) {
+        return idx;
+      }
+    }
+
+    return -1;
+  }
+
+  function syncViewModeClasses() {
+    if (!experience) {
+      return;
+    }
+
+    experience.classList.toggle("mode-walk", currentViewMode === viewModes.walk);
+    experience.classList.toggle("mode-immersive", currentViewMode === viewModes.immersive);
+    experience.classList.toggle("mode-wall", currentViewMode === viewModes.wall);
+  }
+
+  function setViewMode(mode, smooth) {
+    var shouldAnimate = smooth !== false;
+    if (!hasOwn(viewModes, mode)) {
+      return;
+    }
+
+    currentViewMode = mode;
+    syncViewModeClasses();
+    centerOn(currentIndex, shouldAnimate);
+  }
+
   function updateFloorParallax() {
     if (!floor) {
       return;
@@ -232,6 +284,21 @@
     currentIndex = Math.max(0, Math.min(index, cards.length - 1));
     setStoredValue(STORAGE_KEYS.index, currentIndex);
 
+    if (currentViewMode === viewModes.wall) {
+      xOffset = 0;
+      galleryWall.style.transition = shouldAnimate
+        ? "transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1)"
+        : "none";
+      galleryWall.style.transform = "translateX(0px)";
+      updateFloorParallax();
+      setActiveCard(cards, currentIndex);
+
+      if (currentIndex !== previousIndex && soundOn) {
+        playTransitionChime();
+      }
+      return;
+    }
+
     var cardCenterPosition = getCardCenter(cards[currentIndex]);
     var targetOffset = viewportCenter - cardCenterPosition;
     xOffset = targetOffset;
@@ -242,14 +309,7 @@
     galleryWall.style.transform = "translateX(" + xOffset + "px)";
     updateFloorParallax();
 
-    var cardIndex;
-    for (cardIndex = 0; cardIndex < cards.length; cardIndex += 1) {
-      if (cardIndex === currentIndex) {
-        cards[cardIndex].classList.add("active");
-      } else {
-        cards[cardIndex].classList.remove("active");
-      }
-    }
+    setActiveCard(cards, currentIndex);
 
     if (currentIndex !== previousIndex && soundOn) {
       playTransitionChime();
@@ -302,6 +362,10 @@
   }
 
   function startDrag(clientX) {
+    if (currentViewMode === viewModes.wall) {
+      return;
+    }
+
     isDragging = true;
     dragStartX = clientX;
     dragStartOffset = xOffset;
@@ -459,10 +523,22 @@
     window.addEventListener("keydown", function (event) {
       var key = event.key || "";
       if (key === "ArrowLeft") {
+        if (currentViewMode === viewModes.wall) {
+          setViewMode(viewModes.walk, true);
+        }
         navigate(-1);
       }
       if (key === "ArrowRight") {
+        if (currentViewMode === viewModes.wall) {
+          setViewMode(viewModes.walk, true);
+        }
         navigate(1);
+      }
+      if (key === "ArrowDown") {
+        setViewMode(viewModes.immersive, true);
+      }
+      if (key === "ArrowUp") {
+        setViewMode(viewModes.wall, true);
       }
       if (key && key.toLowerCase && key.toLowerCase() === "m") {
         toggleAmbientSound();
@@ -481,10 +557,35 @@
       }
 
       if (event.deltaY > 0 || event.deltaX > 0) {
+        if (currentViewMode === viewModes.wall) {
+          setViewMode(viewModes.walk, true);
+        }
         navigate(1);
       } else {
+        if (currentViewMode === viewModes.wall) {
+          setViewMode(viewModes.walk, true);
+        }
         navigate(-1);
       }
+    });
+
+    galleryWall.addEventListener("click", function (event) {
+      var card = event.target && event.target.closest ? event.target.closest(".art-card") : null;
+      if (!card) {
+        return;
+      }
+
+      var clickedIndex = getCardIndex(card);
+      if (clickedIndex < 0) {
+        return;
+      }
+
+      if (clickedIndex !== currentIndex) {
+        centerOn(clickedIndex, true);
+        return;
+      }
+
+      setViewMode(viewModes.immersive, true);
     });
 
     bindPointerFallbacks();
@@ -773,6 +874,7 @@
   bindEvents();
   applyThemePreset();
   setStoredValue(STORAGE_KEYS.tone, soundPreset);
+  syncViewModeClasses();
   centerOn(initialIndex, false);
   setSettingsOpen(false);
   syncSoundUi();
