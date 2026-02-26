@@ -117,6 +117,9 @@ body {
   padding: 0.8rem 1rem 0.6rem;
   position: relative;
   z-index: 10;
+  overflow: hidden;
+  transition: opacity 280ms ease, transform 280ms ease, max-height 280ms ease, padding 280ms ease;
+  max-height: 12rem;
 }
 
 .eyebrow {
@@ -162,13 +165,14 @@ h2 {
   opacity: 0;
   transition: opacity 420ms ease;
   z-index: 4;
+  transform-origin: 50% 50%;
 }
 
 .experience::before {
   top: -3rem;
   left: -3rem;
-  width: 18rem;
-  height: 18rem;
+  width: 26rem;
+  height: 26rem;
   background:
     radial-gradient(circle at 50% 50%, rgba(245, 223, 173, 0.38) 0 12%, rgba(245, 223, 173, 0) 13% 100%),
     repeating-conic-gradient(
@@ -183,8 +187,8 @@ h2 {
 .experience::after {
   right: -2.6rem;
   bottom: 14%;
-  width: 14rem;
-  height: 14rem;
+  width: 22rem;
+  height: 22rem;
   background:
     radial-gradient(circle at 50% 50%, rgba(216, 178, 108, 0.36) 0 10%, rgba(216, 178, 108, 0) 11% 100%),
     repeating-conic-gradient(
@@ -198,6 +202,35 @@ h2 {
 .experience.mode-immersive::before,
 .experience.mode-immersive::after {
   opacity: 0.42;
+}
+
+.experience.mode-immersive::before {
+  animation: mandala-spin-cw 40s linear infinite;
+}
+
+.experience.mode-immersive::after {
+  animation: mandala-spin-ccw 34s linear infinite;
+}
+
+body.mode-immersive .gallery-app {
+  grid-template-rows: 0 1fr;
+}
+
+body.mode-immersive .gallery-header {
+  opacity: 0;
+  transform: translateY(-0.9rem);
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  pointer-events: none;
+}
+
+body.mode-immersive .utility-controls,
+body.mode-immersive .floor,
+body.mode-immersive .view-mode-controls {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
 }
 
 .aura,
@@ -233,6 +266,65 @@ h2 {
   transform: translateY(-2%);
   animation: beams 14s ease-in-out infinite alternate;
   z-index: 2;
+}
+
+.view-mode-controls {
+  position: relative;
+  z-index: 8;
+  display: grid;
+  justify-items: center;
+  gap: 0.32rem;
+  pointer-events: auto;
+}
+
+.view-mode-btn {
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+  font: inherit;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  backdrop-filter: blur(3px);
+}
+
+.view-mode-btn:hover,
+.view-mode-btn:focus,
+.view-mode-btn:focus-visible {
+  background: var(--control-hover-bg);
+  transform: translateY(-1px);
+}
+
+.view-mode-btn[aria-pressed="true"] {
+  border-color: rgba(255, 230, 170, 0.94);
+  background: var(--control-active-bg);
+  box-shadow: 0 0 0 2px rgba(245, 223, 173, 0.2);
+}
+
+.view-mode-btn--walk {
+  border-radius: 999px;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.42rem 0.9rem;
+}
+
+.view-mode-btn--grid,
+.view-mode-btn--immersive {
+  width: 5.9rem;
+  padding: 0.34rem 0.58rem;
+  font-size: 0.94rem;
+  line-height: 1;
+}
+
+.view-mode-btn--grid {
+  border-radius: 0.78rem 0.78rem 0.1rem 0.1rem;
+}
+
+.view-mode-btn--immersive {
+  border-radius: 0.1rem 0.1rem 0.78rem 0.78rem;
 }
 
 .utility-controls {
@@ -360,11 +452,29 @@ h2 {
   }
 }
 
+@keyframes mandala-spin-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mandala-spin-ccw {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
 .gallery-wall {
   position: absolute;
-  top: 2%;
+  top: 6%;
   left: 0;
-  height: 68%;
+  height: 72%;
   display: flex;
   align-items: center;
   gap: 3rem;
@@ -375,6 +485,11 @@ h2 {
   transition: transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: 5;
   will-change: transform;
+}
+
+.experience.mode-immersive .gallery-wall {
+  top: 10%;
+  height: 78%;
 }
 
 .experience.mode-wall .gallery-wall {
@@ -428,7 +543,7 @@ h2 {
 
 .art-card.active {
   opacity: 1;
-  transform: scale(2.06) translateY(-0.2rem);
+  transform: scale(2.34) translateY(-0.28rem);
   -webkit-filter: saturate(1) drop-shadow(0 24px 25px rgba(0, 0, 0, 0.26));
   filter: saturate(1) drop-shadow(0 24px 25px rgba(0, 0, 0, 0.26));
   z-index: 9;
@@ -436,7 +551,7 @@ h2 {
 
 .experience.mode-immersive .art-card.active {
   opacity: 1;
-  transform: scale(2.44) translateY(-0.6rem);
+  transform: scale(2.72) translateY(-0.66rem);
   -webkit-filter: saturate(1.12) drop-shadow(0 34px 48px rgba(0, 0, 0, 0.42));
   filter: saturate(1.12) drop-shadow(0 34px 48px rgba(0, 0, 0, 0.42));
 }
@@ -533,7 +648,7 @@ h2 {
 }
 
 .experience.mode-immersive .bottom-hud {
-  opacity: 0.55;
+  opacity: 1;
 }
 
 .experience.mode-wall .bottom-hud {
@@ -542,7 +657,8 @@ h2 {
 
 .nav-controls {
   display: flex;
-  gap: 0.6rem;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .nav-controls > * {
@@ -565,7 +681,7 @@ h2 {
   padding: 0.42rem 0.9rem;
   border-radius: 999px;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .nav-btn:hover,
@@ -573,6 +689,13 @@ h2 {
 .nav-btn:focus-visible {
   background: var(--control-hover-bg);
   transform: translateY(-2px);
+}
+
+.nav-btn.is-flash {
+  background: var(--control-active-bg);
+  border-color: rgba(255, 230, 170, 0.9);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 0 2px rgba(245, 223, 173, 0.2);
 }
 
 .help-text {
@@ -597,6 +720,58 @@ h2 {
   margin: 0;
 }
 
+.guide-text,
+.help-text {
+  display: none;
+}
+
+.view-mode-controls {
+  display: grid;
+}
+
+.nav-btn--icon {
+  min-width: 3rem;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.34rem;
+  line-height: 1;
+}
+
+.nav-btn--with-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-up-immersive {
+  display: none;
+}
+
+body.mode-immersive .view-mode-controls {
+  display: none;
+}
+
+body.mode-immersive .nav-up-immersive {
+  display: inline-flex;
+}
+
+body.mode-immersive .nav-btn--with-label {
+  min-width: 3rem;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  font-size: 1.34rem;
+  line-height: 1;
+}
+
+body.mode-immersive .nav-btn--with-label .nav-label {
+  display: none;
+}
+
 .footer-note {
   width: 100%;
   max-width: 54rem;
@@ -615,12 +790,28 @@ h2 {
 }
 
 @media (max-width: 1024px) {
+  .view-mode-btn--walk {
+    font-size: 0.94rem;
+    padding: 0.38rem 0.78rem;
+  }
+
+  .view-mode-btn--grid,
+  .view-mode-btn--immersive {
+    width: 5.5rem;
+    font-size: 0.84rem;
+  }
+
   .gallery-wall {
     gap: 1.6rem;
     gap: clamp(1.4rem, 2.6vw, 2.2rem);
     padding: 0 28vw;
-    height: 64%;
-    top: 4%;
+    height: 69%;
+    top: 8%;
+  }
+
+  .experience.mode-immersive .gallery-wall {
+    top: 11%;
+    height: 76%;
   }
 
   .art-card {
@@ -628,11 +819,11 @@ h2 {
   }
 
   .art-card.active {
-    transform: scale(1.72) translateY(-0.16rem);
+    transform: scale(1.94) translateY(-0.22rem);
   }
 
   .experience.mode-immersive .art-card.active {
-    transform: scale(2.02) translateY(-0.45rem);
+    transform: scale(2.22) translateY(-0.52rem);
   }
 
   .utility-btn,
@@ -690,8 +881,13 @@ h2 {
   .gallery-wall {
     gap: 1.2rem;
     padding: 0 42vw;
-    height: 58%;
-    top: 5%;
+    height: 64%;
+    top: 9%;
+  }
+
+  .experience.mode-immersive .gallery-wall {
+    top: 12%;
+    height: 72%;
   }
 
   .art-card {
@@ -699,11 +895,11 @@ h2 {
   }
 
   .art-card.active {
-    transform: scale(1.46) translateY(-0.1rem);
+    transform: scale(1.64) translateY(-0.14rem);
   }
 
   .experience.mode-immersive .art-card.active {
-    transform: scale(1.72) translateY(-0.32rem);
+    transform: scale(1.9) translateY(-0.36rem);
   }
 
   .experience.mode-wall .gallery-wall {
@@ -724,11 +920,11 @@ h2 {
   }
 
   .nav-controls {
-    gap: 0.42rem;
+    gap: 0.36rem;
   }
 
   .nav-controls > * {
-    margin-left: 0.42rem;
+    margin-left: 0.36rem;
   }
 
   .nav-btn {
@@ -751,8 +947,13 @@ h2 {
   }
 
   .gallery-wall {
-    height: 62%;
-    top: 3%;
+    height: 68%;
+    top: 7%;
+  }
+
+  .experience.mode-immersive .gallery-wall {
+    top: 10%;
+    height: 72%;
   }
 
   .experience.mode-wall .gallery-wall {

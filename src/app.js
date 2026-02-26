@@ -24,6 +24,10 @@
   var experience = document.querySelector(".experience");
   var template = document.getElementById("artCardTemplate");
   var prevBtn = document.getElementById("prevBtn");
+  var modeGridBtn = document.getElementById("modeGridBtn");
+  var modeWalkBtn = document.getElementById("modeWalkBtn");
+  var modeImmersiveBtn = document.getElementById("modeImmersiveBtn");
+  var modeUpBtn = document.getElementById("modeUpBtn");
   var nextBtn = document.getElementById("nextBtn");
   var floor = document.querySelector(".floor");
   var soundBtn = document.getElementById("soundBtn");
@@ -52,6 +56,10 @@
   var themePreset = "navy";
   var initialIndex = 0;
   var settingsOpen = false;
+  var navFlashTimers = {
+    prev: null,
+    next: null
+  };
   var viewModes = {
     walk: "walk",
     immersive: "immersive",
@@ -245,9 +253,45 @@
       return;
     }
 
+    document.body.classList.toggle("mode-walk", currentViewMode === viewModes.walk);
+    document.body.classList.toggle("mode-immersive", currentViewMode === viewModes.immersive);
+    document.body.classList.toggle("mode-wall", currentViewMode === viewModes.wall);
+
     experience.classList.toggle("mode-walk", currentViewMode === viewModes.walk);
     experience.classList.toggle("mode-immersive", currentViewMode === viewModes.immersive);
     experience.classList.toggle("mode-wall", currentViewMode === viewModes.wall);
+  }
+
+  function syncViewModeUi() {
+    if (modeGridBtn && modeWalkBtn && modeImmersiveBtn) {
+      modeGridBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.wall));
+      modeWalkBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.walk));
+      modeImmersiveBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.immersive));
+    }
+
+    if (!modeUpBtn) {
+      return;
+    }
+
+    modeUpBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.wall));
+    if (currentViewMode === viewModes.immersive) {
+      modeUpBtn.setAttribute("aria-label", "Go to gallery walk view");
+      modeUpBtn.setAttribute("title", "Go to gallery walk view");
+    } else if (currentViewMode === viewModes.walk) {
+      modeUpBtn.setAttribute("aria-label", "Go to wall grid view");
+      modeUpBtn.setAttribute("title", "Go to wall grid view");
+    } else {
+      modeUpBtn.setAttribute("aria-label", "Wall grid view active");
+      modeUpBtn.setAttribute("title", "Wall grid view active");
+    }
+  }
+
+  function handleUpTransition() {
+    if (currentViewMode === viewModes.immersive) {
+      setViewMode(viewModes.walk, true);
+    } else if (currentViewMode === viewModes.walk) {
+      setViewMode(viewModes.wall, true);
+    }
   }
 
   function setViewMode(mode, smooth) {
@@ -258,6 +302,7 @@
 
     currentViewMode = mode;
     syncViewModeClasses();
+    syncViewModeUi();
     centerOn(currentIndex, shouldAnimate);
   }
 
@@ -317,7 +362,31 @@
   }
 
   function navigate(direction) {
+    flashNavButton(direction);
     centerOn(currentIndex + direction, true);
+  }
+
+  function flashNavButton(direction) {
+    var isPrev = direction < 0;
+    var button = isPrev ? prevBtn : nextBtn;
+    var timerKey = isPrev ? "prev" : "next";
+
+    if (!button) {
+      return;
+    }
+
+    button.classList.remove("is-flash");
+    if (navFlashTimers[timerKey]) {
+      window.clearTimeout(navFlashTimers[timerKey]);
+    }
+
+    void button.offsetWidth;
+    button.classList.add("is-flash");
+
+    navFlashTimers[timerKey] = window.setTimeout(function () {
+      button.classList.remove("is-flash");
+      navFlashTimers[timerKey] = null;
+    }, 220);
   }
 
   function clampNearestIndex() {
@@ -523,22 +592,20 @@
     window.addEventListener("keydown", function (event) {
       var key = event.key || "";
       if (key === "ArrowLeft") {
-        if (currentViewMode === viewModes.wall) {
-          setViewMode(viewModes.walk, true);
-        }
         navigate(-1);
       }
       if (key === "ArrowRight") {
-        if (currentViewMode === viewModes.wall) {
-          setViewMode(viewModes.walk, true);
-        }
         navigate(1);
       }
       if (key === "ArrowDown") {
-        setViewMode(viewModes.immersive, true);
+        if (currentViewMode === viewModes.wall) {
+          setViewMode(viewModes.walk, true);
+        } else {
+          setViewMode(viewModes.immersive, true);
+        }
       }
       if (key === "ArrowUp") {
-        setViewMode(viewModes.wall, true);
+        handleUpTransition();
       }
       if (key && key.toLowerCase && key.toLowerCase() === "m") {
         toggleAmbientSound();
@@ -557,14 +624,8 @@
       }
 
       if (event.deltaY > 0 || event.deltaX > 0) {
-        if (currentViewMode === viewModes.wall) {
-          setViewMode(viewModes.walk, true);
-        }
         navigate(1);
       } else {
-        if (currentViewMode === viewModes.wall) {
-          setViewMode(viewModes.walk, true);
-        }
         navigate(-1);
       }
     });
@@ -587,6 +648,30 @@
 
       setViewMode(viewModes.immersive, true);
     });
+
+    if (modeUpBtn) {
+      modeUpBtn.addEventListener("click", function () {
+        handleUpTransition();
+      });
+    }
+
+    if (modeGridBtn) {
+      modeGridBtn.addEventListener("click", function () {
+        setViewMode(viewModes.wall, true);
+      });
+    }
+
+    if (modeWalkBtn) {
+      modeWalkBtn.addEventListener("click", function () {
+        setViewMode(viewModes.walk, true);
+      });
+    }
+
+    if (modeImmersiveBtn) {
+      modeImmersiveBtn.addEventListener("click", function () {
+        setViewMode(viewModes.immersive, true);
+      });
+    }
 
     bindPointerFallbacks();
 
@@ -875,6 +960,7 @@
   applyThemePreset();
   setStoredValue(STORAGE_KEYS.tone, soundPreset);
   syncViewModeClasses();
+  syncViewModeUi();
   centerOn(initialIndex, false);
   setSettingsOpen(false);
   syncSoundUi();
