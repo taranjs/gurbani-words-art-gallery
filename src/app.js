@@ -33,6 +33,7 @@
   var soundBtn = document.getElementById("soundBtn");
   var soundPresetSelect = document.getElementById("soundPreset");
   var themePresetSelect = document.getElementById("themePreset");
+  var floorPresetSelect = document.getElementById("floorPreset");
   var fullscreenBtn = document.getElementById("fullscreenBtn");
   var settingsBtn = document.getElementById("settingsBtn");
   var settingsPanel = document.getElementById("settingsPanel");
@@ -40,6 +41,7 @@
   var STORAGE_KEYS = {
     theme: "gurbani-gallery.theme",
     tone: "gurbani-gallery.tone",
+    floor: "gurbani-gallery.floor",
     index: "gurbani-gallery.index"
   };
 
@@ -54,6 +56,7 @@
   var soundOn = false;
   var soundPreset = "mool";
   var themePreset = "navy";
+  var floorPreset = "carpet-brown";
   var initialIndex = 0;
   var settingsOpen = false;
   var navFlashTimers = {
@@ -107,6 +110,7 @@
   };
 
   var themePresets = ["navy", "ochre", "crimson"];
+  var floorPresets = ["theatre-wood", "carpet-brown"];
 
   function safeParseInt(value, fallbackValue) {
     var parsed = parseInt(value, 10);
@@ -155,6 +159,11 @@
     var storedTone = getStoredValue(STORAGE_KEYS.tone);
     if (storedTone && hasOwn(soundPresets, storedTone)) {
       soundPreset = storedTone;
+    }
+
+    var storedFloor = getStoredValue(STORAGE_KEYS.floor);
+    if (storedFloor && includes(floorPresets, storedFloor)) {
+      floorPreset = storedFloor;
     }
 
     var storedIndex = safeParseInt(getStoredValue(STORAGE_KEYS.index) || "0", 0);
@@ -312,6 +321,7 @@
     }
 
     var shift = -xOffset * 0.42;
+    floor.style.setProperty("--floor-shift", shift + "px");
     floor.style.backgroundPosition = shift + "px 0, " + (shift * -0.85) + "px 0";
   }
 
@@ -528,6 +538,13 @@
     }
   }
 
+  function removeFloorClasses() {
+    var f;
+    for (f = 0; f < floorPresets.length; f += 1) {
+      document.body.classList.remove("floor-" + floorPresets[f]);
+    }
+  }
+
   function hasPromise(value) {
     return value && typeof value.then === "function";
   }
@@ -701,6 +718,13 @@
       });
     }
 
+    if (floorPresetSelect) {
+      floorPresetSelect.addEventListener("change", function () {
+        floorPreset = floorPresetSelect.value;
+        applyFloorPreset();
+      });
+    }
+
     if (fullscreenBtn) {
       fullscreenBtn.addEventListener("click", function () {
         toggleFullscreen();
@@ -744,6 +768,15 @@
       themePresetSelect.value = themePreset;
     }
     setStoredValue(STORAGE_KEYS.theme, themePreset);
+  }
+
+  function applyFloorPreset() {
+    removeFloorClasses();
+    document.body.classList.add("floor-" + floorPreset);
+    if (floorPresetSelect) {
+      floorPresetSelect.value = floorPreset;
+    }
+    setStoredValue(STORAGE_KEYS.floor, floorPreset);
   }
 
   function ensureAudioGraph() {
@@ -958,6 +991,7 @@
   loadPersistedPreferences();
   bindEvents();
   applyThemePreset();
+  applyFloorPreset();
   setStoredValue(STORAGE_KEYS.tone, soundPreset);
   syncViewModeClasses();
   syncViewModeUi();
