@@ -579,6 +579,7 @@
       slideshowTimerId = null;
     }
     slideshowActive = false;
+    document.body.classList.remove("slideshow-active");
     if (slideshowBtn) {
       slideshowBtn.textContent = "▶";
       slideshowBtn.setAttribute("aria-pressed", "false");
@@ -589,13 +590,20 @@
   function startSlideshow() {
     stopSlideshow();
     slideshowActive = true;
+    document.body.classList.add("slideshow-active");
     if (slideshowBtn) {
       slideshowBtn.textContent = "⏸";
       slideshowBtn.setAttribute("aria-pressed", "true");
       slideshowBtn.classList.add("is-active");
     }
     slideshowTimerId = window.setInterval(function () {
-      navigate(1);
+      var metrics = getCardMetrics();
+      var cards = metrics.cards;
+      if (cards.length && currentIndex >= cards.length - 1) {
+        centerOn(0, true);
+      } else {
+        navigate(1);
+      }
     }, slideshowInterval * 1000);
   }
 
