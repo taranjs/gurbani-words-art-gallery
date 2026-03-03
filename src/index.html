@@ -26,6 +26,7 @@
 
         <div class="utility-controls" aria-label="Experience controls">
           <button id="fullscreenBtn" class="utility-btn utility-btn--icon" aria-pressed="false" aria-label="Enter fullscreen" title="Toggle fullscreen">⛶</button>
+          <button id="slideshowBtn" class="utility-btn utility-btn--icon" aria-pressed="false" aria-label="Start slideshow" title="Toggle slideshow">▶</button>
           <button id="settingsBtn" class="utility-btn utility-btn--icon" aria-expanded="false" aria-haspopup="true" aria-controls="settingsPanel" aria-label="Open settings" title="Settings">⚙</button>
 
           <div id="settingsPanel" class="settings-panel" role="group" aria-label="Gallery settings" hidden>
@@ -46,6 +47,16 @@
             <select id="floorPreset" class="utility-select" aria-label="Choose floor style">
               <option value="theatre-wood">Theatre Wood</option>
               <option value="carpet-brown">Carpet Brown</option>
+            </select>
+            <label class="utility-select-wrap" for="slideshowInterval">Slideshow Secs</label>
+            <select id="slideshowInterval" class="utility-select" aria-label="Seconds per slide in slideshow">
+              <option value="2">2 secs</option>
+              <option value="3">3 secs</option>
+              <option value="4">4 secs</option>
+              <option value="5" selected>5 secs</option>
+              <option value="6">6 secs</option>
+              <option value="8">8 secs</option>
+              <option value="10">10 secs</option>
             </select>
           </div>
         </div>

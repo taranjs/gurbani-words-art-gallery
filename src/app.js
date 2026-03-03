@@ -35,14 +35,17 @@
   var themePresetSelect = document.getElementById("themePreset");
   var floorPresetSelect = document.getElementById("floorPreset");
   var fullscreenBtn = document.getElementById("fullscreenBtn");
+  var slideshowBtn = document.getElementById("slideshowBtn");
   var settingsBtn = document.getElementById("settingsBtn");
   var settingsPanel = document.getElementById("settingsPanel");
+  var slideshowIntervalSelect = document.getElementById("slideshowInterval");
 
   var STORAGE_KEYS = {
     theme: "gurbani-gallery.theme",
     tone: "gurbani-gallery.tone",
     floor: "gurbani-gallery.floor",
-    index: "gurbani-gallery.index"
+    index: "gurbani-gallery.index",
+    slideshowInterval: "gurbani-gallery.slideshowInterval"
   };
 
   var currentIndex = 0;
@@ -59,6 +62,9 @@
   var floorPreset = "carpet-brown";
   var initialIndex = 0;
   var settingsOpen = false;
+  var slideshowActive = false;
+  var slideshowInterval = 5;
+  var slideshowTimerId = null;
   var navFlashTimers = {
     prev: null,
     next: null
@@ -567,6 +573,40 @@
     }
   }
 
+  function stopSlideshow() {
+    if (slideshowTimerId) {
+      window.clearInterval(slideshowTimerId);
+      slideshowTimerId = null;
+    }
+    slideshowActive = false;
+    if (slideshowBtn) {
+      slideshowBtn.textContent = "▶";
+      slideshowBtn.setAttribute("aria-pressed", "false");
+      slideshowBtn.classList.remove("is-active");
+    }
+  }
+
+  function startSlideshow() {
+    stopSlideshow();
+    slideshowActive = true;
+    if (slideshowBtn) {
+      slideshowBtn.textContent = "⏸";
+      slideshowBtn.setAttribute("aria-pressed", "true");
+      slideshowBtn.classList.add("is-active");
+    }
+    slideshowTimerId = window.setInterval(function () {
+      navigate(1);
+    }, slideshowInterval * 1000);
+  }
+
+  function toggleSlideshow() {
+    if (slideshowActive) {
+      stopSlideshow();
+    } else {
+      startSlideshow();
+    }
+  }
+
   function hasPromise(value) {
     return value && typeof value.then === "function";
   }
@@ -740,6 +780,22 @@
       floorPresetSelect.addEventListener("change", function () {
         floorPreset = floorPresetSelect.value;
         applyFloorPreset();
+      });
+    }
+
+    if (slideshowIntervalSelect) {
+      slideshowIntervalSelect.addEventListener("change", function () {
+        slideshowInterval = safeParseInt(slideshowIntervalSelect.value, 5);
+        setStoredValue(STORAGE_KEYS.slideshowInterval, slideshowInterval);
+        if (slideshowActive) {
+          startSlideshow();
+        }
+      });
+    }
+
+    if (slideshowBtn) {
+      slideshowBtn.addEventListener("click", function () {
+        toggleSlideshow();
       });
     }
 
@@ -1011,6 +1067,9 @@
   applyThemePreset();
   applyFloorPreset();
   setStoredValue(STORAGE_KEYS.tone, soundPreset);
+  if (slideshowIntervalSelect) {
+    slideshowIntervalSelect.value = String(slideshowInterval);
+  }
   syncViewModeClasses();
   syncViewModeUi();
   centerOn(initialIndex, false);
