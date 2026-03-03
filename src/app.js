@@ -276,6 +276,20 @@
       modeGridBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.wall));
       modeWalkBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.walk));
       modeImmersiveBtn.setAttribute("aria-pressed", String(currentViewMode === viewModes.immersive));
+
+      modeGridBtn.hidden = currentViewMode === viewModes.wall;
+      modeImmersiveBtn.hidden = currentViewMode === viewModes.immersive;
+
+      modeGridBtn.textContent = "↑";
+      modeImmersiveBtn.textContent = "↓";
+
+      if (currentViewMode === viewModes.wall) {
+        modeWalkBtn.textContent = "Grid";
+      } else if (currentViewMode === viewModes.immersive) {
+        modeWalkBtn.textContent = "Immersive";
+      } else {
+        modeWalkBtn.textContent = "Gallery";
+      }
     }
 
     if (!modeUpBtn) {
@@ -300,6 +314,14 @@
       setViewMode(viewModes.walk, true);
     } else if (currentViewMode === viewModes.walk) {
       setViewMode(viewModes.wall, true);
+    }
+  }
+
+  function handleDownTransition() {
+    if (currentViewMode === viewModes.wall) {
+      setViewMode(viewModes.walk, true);
+    } else if (currentViewMode === viewModes.walk) {
+      setViewMode(viewModes.immersive, true);
     }
   }
 
@@ -615,11 +637,7 @@
         navigate(1);
       }
       if (key === "ArrowDown") {
-        if (currentViewMode === viewModes.wall) {
-          setViewMode(viewModes.walk, true);
-        } else {
-          setViewMode(viewModes.immersive, true);
-        }
+        handleDownTransition();
       }
       if (key === "ArrowUp") {
         handleUpTransition();
@@ -674,7 +692,7 @@
 
     if (modeGridBtn) {
       modeGridBtn.addEventListener("click", function () {
-        setViewMode(viewModes.wall, true);
+        handleUpTransition();
       });
     }
 
@@ -686,7 +704,7 @@
 
     if (modeImmersiveBtn) {
       modeImmersiveBtn.addEventListener("click", function () {
-        setViewMode(viewModes.immersive, true);
+        handleDownTransition();
       });
     }
 
